@@ -25,7 +25,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white font-sans overflow-x-hidden text-[#102a6e]">
       {/* --- 3. HERO SECTION --- */}
-      <header className="relative w-full pb-20">
+      <header className="pt-32 relative w-full pb-32">
         {/* Background Image (Full Width) */}
         <div className="absolute inset-0 z-0 h-[700px] w-full bg-gray-100 pointer-events-none">
           <div className="w-full h-full relative opacity-70 mix-blend-multiply">
@@ -77,7 +77,7 @@ export default function Home() {
             </button>
 
             {/* --- CARDS (GRID SYSTEM) --- */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+            <div className="pt-24 pb-12 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
               {/* Card 1 */}
               <div
                 className="rounded-[30px] p-8 text-white flex flex-col items-center shadow-xl transform hover:-translate-y-2 transition-all"
@@ -156,7 +156,7 @@ export default function Home() {
               </p>
             </div>
             <div className="md:w-2/5 flex justify-center md:justify-end md:-mt-12 relative">
-              <div className="w-[300px] h-[450px] bg-gray-100 rounded-xl flex items-center justify-center relative">
+              <div className="w-[300px] h-[450px]  rounded-xl flex items-center justify-center relative">
                 {/* Placeholder Gambar */}
                 <span className="text-gray-400 text-xs text-center p-4">
                   Pastikan file 'doctor.png'
@@ -164,7 +164,12 @@ export default function Home() {
                   ada di folder public
                 </span>
                 {/* UNCOMMENT JIKA GAMBAR ADA: */}
-                {/* <Image src="/doctor.png" alt="Dokter" fill className="object-contain object-bottom"/> */}
+                <Image
+                  src="/images/doctor.png"
+                  alt="Dokter"
+                  fill
+                  className="object-contain object-bottom"
+                />
               </div>
             </div>
           </div>
