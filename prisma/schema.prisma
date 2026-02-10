@@ -1,0 +1,29 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") // WAJIB ADA BARIS INI
+}
+model News {
+  id          String   @id @default(cuid())
+  title       String
+  image       String
+  date        DateTime @default(now())
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("berita")
+}
+
+model Admin {
+  id       String @id @default(cuid())
+  username String @unique
+  password String 
+
+  @@map("admin")
+}
