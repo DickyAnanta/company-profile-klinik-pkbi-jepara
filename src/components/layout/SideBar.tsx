@@ -3,23 +3,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react"; // Tambah useEffect & useState
-import { Search, Menu, LogOut, ChevronDown, ChevronRight } from "lucide-react"; // Tambah icon Chevron
+import { useState, useEffect } from "react";
+import { Search, Menu, LogOut, ChevronDown, ChevronRight } from "lucide-react";
+import { logoutAction } from "@/app/actions/auth"; // 1. Import fungsi logout dari folder actions
 
 export default function SideBar() {
   const pathname = usePathname();
   const bluePrimary = "#00387d";
-
-  // State untuk mengontrol dropdown Berita
-  // Default: Terbuka jika URL mengandung kata '/admin/berita', tertutup jika tidak.
   const [isBeritaOpen, setIsBeritaOpen] = useState(false);
 
-  // Effect agar dropdown otomatis terbuka saat halaman di-refresh/diakses langsung
   useEffect(() => {
     if (pathname.includes("/admin/berita")) {
       setIsBeritaOpen(true);
     }
   }, [pathname]);
+
+  // 2. Fungsi penanganan logout dengan konfirmasi
+  const handleLogout = async () => {
+    if (confirm("Apakah Anda yakin ingin keluar dari sistem admin PKBI?")) {
+      await logoutAction();
+    }
+  };
 
   return (
     <aside
@@ -91,17 +95,15 @@ export default function SideBar() {
 
         {/* 3. DROPDOWN BERITA */}
         <div className="mt-2">
-          {/* Tombol Utama Dropdown */}
           <button
             onClick={() => setIsBeritaOpen(!isBeritaOpen)}
             className={`w-full flex items-center justify-between px-6 py-3 rounded-full font-bold transition-all duration-200 ${
               pathname.includes("/admin/berita")
-                ? "bg-blue-600/50 text-white" // Style jika child aktif
+                ? "bg-blue-600/50 text-white"
                 : "text-white hover:bg-white/10"
             }`}
           >
             <span>BERITA</span>
-            {/* Icon Panah Berputar */}
             {isBeritaOpen ? (
               <ChevronDown className="w-5 h-5 transition-transform duration-300" />
             ) : (
@@ -109,14 +111,12 @@ export default function SideBar() {
             )}
           </button>
 
-          {/* Isi Dropdown (Anak Menu) */}
           <div
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
               isBeritaOpen ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0"
             }`}
           >
             <div className="bg-[#002859] rounded-2xl py-2 mx-2 space-y-1">
-              {/* Child: Klinik */}
               <Link
                 href="/admin/berita/klinik"
                 className={`block px-6 py-2 text-sm font-medium transition-colors border-l-4 ml-2 ${
@@ -127,8 +127,6 @@ export default function SideBar() {
               >
                 KLINIK
               </Link>
-
-              {/* Child: Kartini */}
               <Link
                 href="/admin/berita/kartini"
                 className={`block px-6 py-2 text-sm font-medium transition-colors border-l-4 ml-2 ${
@@ -146,14 +144,16 @@ export default function SideBar() {
 
       {/* --- FOOTER (LOGOUT) --- */}
       <div className="p-4 mt-auto border-t border-blue-600/30">
-        <form action="/auth/logout" method="post">
-          <button className="w-full bg-white px-6 py-3 rounded-full font-bold text-center shadow-md transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group text-[#00387d]">
-            <LogOut className="w-4 h-4 group-hover:text-red-600 transition-colors" />
-            <span className="group-hover:text-red-600 transition-colors">
-              LOGOUT
-            </span>
-          </button>
-        </form>
+        {/* Mengganti Form dengan Button onClick agar lebih bersih dan stabil */}
+        <button 
+          onClick={handleLogout}
+          className="w-full bg-white px-6 py-3 rounded-full font-bold text-center shadow-md transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group text-[#00387d]"
+        >
+          <LogOut className="w-4 h-4 group-hover:text-red-600 transition-colors" />
+          <span className="group-hover:text-red-600 transition-colors">
+            LOGOUT
+          </span>
+        </button>
       </div>
     </aside>
   );

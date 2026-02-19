@@ -1,21 +1,39 @@
-// src/app/admin/page.tsx
+"use client";
+
 import { Activity, Newspaper, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getDashboardStats } from "../actions"; // Pastikan path import benar
 
 export default function AdminDashboard() {
   const bluePrimary = "#00387d";
+  const [stats, setStats] = useState<any>(null);
+
+  // Mengambil data dashboard dari database
+  useEffect(() => {
+    getDashboardStats().then((data) => {
+      setStats(data);
+    });
+  }, []);
+
+  // Tampilan loading saat menyinkronkan data
+  if (!stats) {
+    return (
+      <div className="min-h-full flex items-center justify-center italic text-blue-900 font-bold">
+        Menyinkronkan data PKBI Jepara...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full font-sans p-4">
-      {/* --- HEADER JUDUL --- */}
+      {/* --- HEADER JUDUL DASHBOARD --- */}
       <div className="mb-12">
-        {/* Hapus 'inline-block' agar elemen mengambil lebar penuh */}
         <h1
           className="text-3xl font-bold italic tracking-wide mb-2"
           style={{ color: bluePrimary }}
         >
           Dashboard
         </h1>
-        {/* Garis Bawah Panjang (Full Width) */}
         <div
           className="h-[3px] w-full rounded-full"
           style={{ backgroundColor: bluePrimary }}
@@ -24,6 +42,7 @@ export default function AdminDashboard() {
 
       {/* --- GRID UTAMA (3 KOLOM) --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        
         {/* ================= KOLOM 1: LAYANAN ================= */}
         <div
           className="relative rounded-[30px] border-[3px] p-5 pt-8 bg-white"
@@ -44,7 +63,9 @@ export default function AdminDashboard() {
             <div className="relative z-10 px-2 flex flex-col items-center">
               <h3 className="text-sm font-medium opacity-90">Jumlah Layanan</h3>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-[5rem] font-bold leading-none">7</span>
+                <span className="text-[5rem] font-bold leading-none">
+                  {stats.countLayanan}
+                </span>
                 <span className="text-sm font-medium opacity-90">
                   Layanan Aktif
                 </span>
@@ -74,7 +95,7 @@ export default function AdminDashboard() {
               Jumlah Berita Klinik
             </h3>
             <span className="text-[4rem] font-bold leading-none mt-1 relative z-10">
-              50
+              {stats.countKlinik}
             </span>
           </div>
 
@@ -85,14 +106,32 @@ export default function AdminDashboard() {
             >
               Berita Terbaru
             </div>
-            <div
-              className="w-full h-36 rounded-2xl border-[3px]"
-              style={{ borderColor: bluePrimary }}
-            ></div>
-            <div
-              className="w-full h-36 rounded-2xl border-[3px]"
-              style={{ borderColor: bluePrimary }}
-            ></div>
+            
+            {stats.latestKlinik.length > 0 ? (
+              stats.latestKlinik.map((berita: any) => (
+                <div
+                  key={berita.id}
+                  className="group relative w-full h-36 rounded-2xl border-[3px] overflow-hidden shadow-sm transition-transform hover:scale-[1.02]"
+                  style={{ borderColor: bluePrimary }}
+                >
+                  <img
+                    src={berita.gambar}
+                    alt={berita.judul}
+                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#00387d] via-[#00387d]/40 to-transparent"></div>
+                  <div className="absolute inset-0 p-3 flex flex-col justify-end">
+                    <p className="text-white font-bold text-[10px] leading-tight uppercase italic line-clamp-2">
+                      {berita.judul}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="w-full h-36 rounded-2xl border-[3px] border-dashed border-gray-200 flex items-center justify-center text-gray-300 italic text-xs">
+                Belum ada berita klinik
+              </div>
+            )}
           </div>
         </div>
 
@@ -117,7 +156,7 @@ export default function AdminDashboard() {
               Jumlah Berita Kartini
             </h3>
             <span className="text-[4rem] font-bold leading-none mt-1 relative z-10">
-              50
+              {stats.countKartini}
             </span>
           </div>
 
@@ -128,16 +167,35 @@ export default function AdminDashboard() {
             >
               Berita Terbaru
             </div>
-            <div
-              className="w-full h-36 rounded-2xl border-[3px]"
-              style={{ borderColor: bluePrimary }}
-            ></div>
-            <div
-              className="w-full h-36 rounded-2xl border-[3px]"
-              style={{ borderColor: bluePrimary }}
-            ></div>
+
+            {stats.latestKartini.length > 0 ? (
+              stats.latestKartini.map((berita: any) => (
+                <div
+                  key={berita.id}
+                  className="group relative w-full h-36 rounded-2xl border-[3px] overflow-hidden shadow-sm transition-transform hover:scale-[1.02]"
+                  style={{ borderColor: bluePrimary }}
+                >
+                  <img
+                    src={berita.gambar}
+                    alt={berita.judul}
+                    className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#00387d] via-[#00387d]/40 to-transparent"></div>
+                  <div className="absolute inset-0 p-3 flex flex-col justify-end">
+                    <p className="text-white font-bold text-[10px] leading-tight uppercase italic line-clamp-2">
+                      {berita.judul}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="w-full h-36 rounded-2xl border-[3px] border-dashed border-gray-200 flex items-center justify-center text-gray-300 italic text-xs">
+                Belum ada berita kartini
+              </div>
+            )}
           </div>
         </div>
+
       </div>
     </div>
   );

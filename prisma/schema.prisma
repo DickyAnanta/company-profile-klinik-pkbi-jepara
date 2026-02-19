@@ -6,14 +6,17 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL") // WAJIB ADA BARIS INI
+  url      = env("DATABASE_URL")
 }
-model News {
+
+model Berita {
   id          String   @id @default(cuid())
-  title       String
-  image       String
-  date        DateTime @default(now())
-  description String   @db.Text
+  judul       String   // Sesuai input "Judul"
+  tagline     String   // Sesuai input "Tagline"
+  gambar      String   // Nama file atau URL gambar
+  tanggal     DateTime @default(now()) // Sesuai input "Tanggal"
+  keterangan  String   @db.Text // Sesuai input "Keterangan"
+  kategori    String   // Untuk membedakan tab "KLINIK" atau "KARTINI"
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

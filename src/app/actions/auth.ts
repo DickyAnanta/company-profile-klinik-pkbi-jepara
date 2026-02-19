@@ -3,8 +3,11 @@
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import bcrypt from "bcrypt"; //
+import bcrypt from "bcrypt";
 
+/**
+ * FUNGSI LOGIN (Kode Aslimu)
+ */
 export async function loginAction(prevState: any, formData: FormData) {
   const username = formData.get("username") as string;
   const password = formData.get("password") as string;
@@ -27,10 +30,9 @@ export async function loginAction(prevState: any, formData: FormData) {
     if (!isMatch) {
       return { message: "Password salah!" };
     }
-    // -------------------------------
 
     const cookieStore = await cookies();
-    cookieStore.set("session_token", "true", {
+    cookieStore.set("session_token", "true", { // <--- Perhatikan nama cookie ini
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24, // 1 Hari
@@ -42,4 +44,17 @@ export async function loginAction(prevState: any, formData: FormData) {
   }
 
   redirect("/admin");
+}
+
+/**
+ * FUNGSI LOGOUT (Tambahan Baru)
+ */
+export async function logoutAction() {
+  const cookieStore = await cookies();
+  
+  // Menghapus session_token agar user dianggap tidak login lagi
+  cookieStore.delete("session_token"); 
+  
+  // Mengarahkan kembali ke halaman login (auth/login)
+  redirect("/login"); 
 }

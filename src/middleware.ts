@@ -2,25 +2,26 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  // Ambil cookie session
-  const session = request.cookies.get("session_token");
+  // 1. Ambil token session dari cookie
+  const token = request.cookies.get("session_token")?.value;
 
-  // Jika user mau masuk ke /admin TAPI tidak punya session
-  if (request.nextUrl.pathname.startsWith("/admin") && !session) {
-    // Tendang balik ke login
+  // 2. Tentukan halaman mana saja yang ingin diproteksi
+  const isDashboardPage = request.nextUrl.pathname.startsWith("/admin");
+
+  // 3. JIKA mencoba masuk dashboard TAPI tidak punya token -> Tendang ke Login
+  if (isDashboardPage && !token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Jika user sudah login TAPI mau akses /login lagi
-  if (request.nextUrl.pathname.startsWith("/login") && session) {
-    // Lempar langsung ke dashboard
+  // 4. JIKA sudah login (punya token) TAPI mencoba akses halaman login -> Masukkan ke Admin
+  if (request.nextUrl.pathname === "/login" && token) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   return NextResponse.next();
 }
 
-// Tentukan path mana saja yang kena aturan ini
+// Konfigurasi agar middleware hanya berjalan pada rute tertentu
 export const config = {
   matcher: ["/admin/:path*", "/login"],
 };
