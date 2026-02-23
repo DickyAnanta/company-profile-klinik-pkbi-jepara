@@ -46,49 +46,61 @@ export default function BeritaKartiniPage() {
   }
 
   return (
-    <div className="p-8 bg-white min-h-screen">
-      {/* Header */}
-      <div className="flex justify-between items-center border-b-2 border-purple-500 pb-2 mb-8">
-        <h1 className="text-blue-600 font-bold text-xl italic">Berita</h1>
+    <div className="max-w-full overflow-hidden">
+      {/* --- HEADER: Responsif & Proporsional --- */}
+      <div className="flex flex-row justify-between items-center border-b-2 border-purple-500 pb-4 mb-8 gap-4">
+        <h1 className="text-[#00387d] font-bold text-xl md:text-2xl italic leading-none">Berita</h1>
         <button 
           onClick={() => { setShowForm(!showForm); if(showForm) setEditData(null); }} 
-          className="bg-blue-400 text-white px-6 py-2 rounded-xl font-bold shadow-sm"
+          className="mt-1 md:mt-0 bg-blue-400 text-white px-5 md:px-8 py-2.5 rounded-xl font-bold shadow-md text-[10px] md:text-base whitespace-nowrap hover:bg-blue-500 transition-all active:scale-95"
         >
           {showForm ? "✕ TUTUP" : "+ TAMBAH"}
         </button>
       </div>
 
-      <h2 className="text-blue-800 italic font-semibold mb-6">Kartini</h2>
+      <h2 className="text-[#00387d] italic font-semibold mb-6 text-lg">Kartini</h2>
 
-      {/* Form Tambah/Edit */}
+      {/* --- FORM TAMBAH/EDIT: Responsif Stacking --- */}
       {showForm && (
-        <div className="mb-10 p-8 border-2 border-blue-100 rounded-[2rem] bg-gray-50/50 animate-in fade-in slide-in-from-top-4 duration-300">
-          <form action={handleSubmit} className="space-y-6 max-w-5xl">
-            <div className="flex items-center gap-4">
-              <label className="w-24 text-gray-700 font-medium">Judul :</label>
-              <input name="judul" defaultValue={editData?.judul} type="text" required className="flex-1 border-2 border-blue-400 rounded-xl p-2 outline-none" />
+        <div className="mb-10 p-5 md:p-8 border-2 border-blue-100 rounded-[2rem] bg-gray-50/50 animate-in fade-in slide-in-from-top-4 duration-300">
+          <form action={handleSubmit} className="space-y-5 md:space-y-6 max-w-5xl">
+            
+            {/* Judul Berita */}
+            <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+              <label className="text-gray-700 font-bold text-sm md:w-24">Judul :</label>
+              <input name="judul" defaultValue={editData?.judul} type="text" required className="w-full flex-1 border-2 border-blue-400 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-100 transition-all" />
             </div>
-            <div className="flex items-center gap-4">
-              <label className="w-24 text-gray-700 font-medium">Tagline :</label>
-              <input name="tagline" defaultValue={editData?.tagline} type="text" required className="flex-1 border-2 border-blue-400 rounded-xl p-2 outline-none" />
+
+            {/* Tagline */}
+            <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+              <label className="text-gray-700 font-bold text-sm md:w-24">Tagline :</label>
+              <input name="tagline" defaultValue={editData?.tagline} type="text" required className="w-full flex-1 border-2 border-blue-400 rounded-xl p-2.5 outline-none" />
             </div>
-            <div className="flex items-center gap-4">
-              <label className="w-24 text-gray-700 font-medium">Tanggal :</label>
-              <input name="tanggal" defaultValue={editData ? new Date(editData.tanggal).toISOString().split('T')[0] : ""} type="date" required className="flex-1 border-2 border-blue-400 rounded-xl p-2 outline-none" />
+
+            {/* Tanggal */}
+            <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+              <label className="text-gray-700 font-bold text-sm md:w-24">Tanggal :</label>
+              <input name="tanggal" defaultValue={editData ? new Date(editData.tanggal).toISOString().split('T')[0] : ""} type="date" required className="w-full flex-1 border-2 border-blue-400 rounded-xl p-2.5 outline-none" />
             </div>
-            <div className="flex items-start gap-4">
-              <label className="w-24 text-gray-700 mt-2 font-medium">Ket :</label>
-              <textarea name="keterangan" defaultValue={editData?.keterangan} rows={3} required className="flex-1 border-2 border-blue-400 rounded-xl p-2 outline-none" />
+
+            {/* Keterangan */}
+            <div className="flex flex-col md:flex-row md:items-start gap-1 md:gap-4">
+              <label className="text-gray-700 font-bold text-sm md:w-24 md:mt-2">Ket :</label>
+              <textarea name="keterangan" defaultValue={editData?.keterangan} rows={4} required className="w-full flex-1 border-2 border-blue-400 rounded-xl p-2.5 outline-none" />
             </div>
-            <div className="flex items-center gap-4">
-              <label className="w-24 text-gray-700 font-medium">Gambar :</label>
-              <div className="flex-1">
-                 <input name="gambar" type="file" accept="image/*" required={!editData} className="text-sm file:mr-4 file:py-2 file:px-6 file:rounded-full file:border-0 file:bg-blue-900 file:text-white file:font-bold cursor-pointer" />
-                 {editData && <p className="text-xs text-gray-500 mt-1">*Kosongkan jika tidak ingin mengganti gambar</p>}
+
+            {/* Unggah Gambar */}
+            <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+              <label className="text-gray-700 font-bold text-sm md:w-24">Gambar :</label>
+              <div className="flex-1 w-full">
+                 <input name="gambar" type="file" accept="image/*" required={!editData} className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-[#00387d] file:text-white file:font-bold cursor-pointer" />
+                 {editData && <p className="text-[10px] text-gray-500 mt-1 italic">*Kosongkan jika tidak ingin mengganti gambar</p>}
               </div>
             </div>
-            <div className="flex justify-end pt-4">
-              <button disabled={isUploading} className="bg-blue-900 text-white px-12 py-3 rounded-full font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all">
+
+            {/* Tombol Simpan */}
+            <div className="flex justify-center md:justify-end pt-4">
+              <button disabled={isUploading} className="w-full md:w-auto bg-[#00387d] text-white px-12 py-3 rounded-full font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all text-sm">
                 {isUploading ? "Memproses..." : editData ? "Update Berita Kartini" : "Simpan Berita Kartini"}
               </button>
             </div>
@@ -96,36 +108,35 @@ export default function BeritaKartiniPage() {
         </div>
       )}
 
-      {/* Grid Daftar Berita */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* --- GRID DAFTAR BERITA: Responsif --- */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
         {listBerita.length > 0 ? (
           listBerita.map((item) => (
-            <div key={item.id} className="group relative aspect-square bg-blue-900 rounded-[2.5rem] overflow-hidden shadow-md transition-transform hover:scale-105">
+            <div key={item.id} className="group relative aspect-square bg-blue-900 rounded-[2.5rem] overflow-hidden shadow-md transition-transform hover:scale-105 active:scale-95">
               <img src={item.gambar} className="absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity group-hover:opacity-70" alt="" />
               
-              <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                {/* Tombol Edit */}
-                <button onClick={() => handleEdit(item)} className="bg-yellow-500 text-white p-2 rounded-full shadow-lg hover:bg-yellow-600">
-                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {/* Tombol Aksi: Terlihat di mobile agar ramah sentuhan */}
+              <div className="absolute top-4 right-4 flex gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity z-20">
+                <button onClick={() => handleEdit(item)} className="bg-yellow-500 text-white p-2.5 rounded-full shadow-lg">
+                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                    </svg>
                 </button>
-                {/* Tombol Hapus */}
-                <button onClick={() => handleDelete(item.id)} className="bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button onClick={() => handleDelete(item.id)} className="bg-red-600 text-white p-2.5 rounded-full shadow-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
               </div>
 
               <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                <p className="text-white font-bold text-sm leading-tight uppercase">{item.judul}</p>
+                <p className="text-white font-bold text-xs md:text-sm leading-tight uppercase line-clamp-2">{item.judul}</p>
               </div>
             </div>
           ))
         ) : (
           <div className="col-span-full py-20 text-center border-2 border-dashed border-gray-100 rounded-[2.5rem]">
-            <p className="text-gray-400 italic font-medium">Belum ada berita Kartini yang ditambahkan.</p>
+            <p className="text-gray-400 italic font-medium text-sm">Belum ada berita Kartini yang ditambahkan.</p>
           </div>
         )}
       </div>

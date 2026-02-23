@@ -1,5 +1,4 @@
-import Image from "next/image";
-import SideBar from "@/components/layout/SideBar"; // Import Sidebar yang baru dibuat
+import SideBar from "@/components/layout/SideBar";
 
 export default function AdminLayout({
   children,
@@ -7,24 +6,15 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-gray-50 font-sans">
-      {/* 1. Panggil Komponen Sidebar */}
+    <div className="flex flex-col lg:flex-row min-h-screen bg-white">
+      {/* Sidebar tetap muncul di semua halaman admin */}
       <SideBar />
 
-      {/* 2. Konten Utama (Main Page) */}
-      <main className="flex-1 relative flex flex-col h-screen overflow-y-auto bg-white">
-        {/* Watermark Background (Opsional) */}
-        <div className="absolute right-0 bottom-0 w-[500px] h-[500px] opacity-[0.03] pointer-events-none z-0">
-          <Image
-            src="/images/logo-pkbi.png"
-            alt="Watermark"
-            fill
-            className="object-contain"
-          />
+      <main className="flex-1 min-w-0 pt-[130px] lg:pt-0 transition-all duration-300">
+        <div className="h-full p-4 md:p-8">
+          {/* Ini adalah tempat dimana page.tsx (Dashboard/Layanan/Berita) akan muncul */}
+          {children} 
         </div>
-
-        {/* Konten Halaman (Page.tsx akan masuk sini) */}
-        <div className="relative z-10 p-6 md:p-10 flex-1">{children}</div>
       </main>
     </div>
   );
