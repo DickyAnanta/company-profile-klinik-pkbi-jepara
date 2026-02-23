@@ -30,3 +30,16 @@ model Admin {
 
   @@map("admin")
 }
+
+model Layanan {
+  id          String   @id @default(cuid())
+  namaLayanan String
+  harga       String
+  jadwal      String
+  keterangan  String   @db.Text
+  gambar      String?  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("layanan")
+}

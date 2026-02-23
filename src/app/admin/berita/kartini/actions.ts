@@ -28,7 +28,7 @@ export async function createBeritaKartini(formData: FormData) {
     const file = formData.get("gambar") as File;
     const buffer = Buffer.from(await file.arrayBuffer());
     const filename = Date.now() + "_" + file.name.replace(/\s+/g, "_");
-    
+
     const uploadDir = path.join(process.cwd(), "public/uploads");
     await fs.mkdir(uploadDir, { recursive: true });
     await fs.writeFile(path.join(uploadDir, filename), buffer);
@@ -81,7 +81,10 @@ export async function updateBeritaKartini(id: string, formData: FormData) {
 
       const buffer = Buffer.from(await file.arrayBuffer());
       const filename = Date.now() + "_" + file.name.replace(/\s+/g, "_");
-      await fs.writeFile(path.join(process.cwd(), "public/uploads", filename), buffer);
+      await fs.writeFile(
+        path.join(process.cwd(), "public/uploads", filename),
+        buffer,
+      );
       gambarPath = `/uploads/${filename}`;
     }
 

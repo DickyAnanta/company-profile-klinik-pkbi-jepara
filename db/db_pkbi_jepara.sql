@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 10, 2026 at 07:52 PM
+-- Generation Time: Feb 18, 2026 at 04:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,21 +59,6 @@ CREATE TABLE `berita` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `kontak`
---
-
-CREATE TABLE `kontak` (
-  `id` varchar(191) NOT NULL,
-  `nama` varchar(191) NOT NULL,
-  `email` varchar(191) NOT NULL,
-  `telepon` varchar(191) NOT NULL,
-  `pesan` text NOT NULL,
-  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `_prisma_migrations`
 --
 
@@ -112,12 +97,6 @@ ALTER TABLE `admin`
 -- Indexes for table `berita`
 --
 ALTER TABLE `berita`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `kontak`
---
-ALTER TABLE `kontak`
   ADD PRIMARY KEY (`id`);
 
 --

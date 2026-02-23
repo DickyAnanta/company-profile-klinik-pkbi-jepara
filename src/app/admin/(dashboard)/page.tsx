@@ -1,29 +1,41 @@
-"use client";
-
 import { Activity, Newspaper, Users } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getDashboardStats } from "../actions"; // Pastikan path import benar
+import { PrismaClient } from "@prisma/client";
 
-export default function AdminDashboard() {
+// --- INISIALISASI PRISMA ---
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const prisma = globalForPrisma.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+// Perhatikan penambahan kata 'async' di bawah ini
+export default async function AdminDashboard() {
   const bluePrimary = "#00387d";
-  const [stats, setStats] = useState<any>(null);
 
-  // Mengambil data dashboard dari database
-  useEffect(() => {
-    getDashboardStats().then((data) => {
-      setStats(data);
-    });
-  }, []);
+  // --- MENGAMBIL DATA LANGSUNG DARI DATABASE ---
 
-  // Tampilan loading saat menyinkronkan data
-  if (!stats) {
-    return (
-      <div className="min-h-full flex items-center justify-center italic text-blue-900 font-bold">
-        Menyinkronkan data PKBI Jepara...
-      </div>
-    );
-  }
+  // 1. Jumlah Layanan
+  const countLayanan = await prisma.layanan.count();
 
+  // 2. Data Berita Klinik
+  const countKlinik = await prisma.berita.count({
+    where: { kategori: "KLINIK" },
+  });
+  const latestKlinik = await prisma.berita.findMany({
+    where: { kategori: "KLINIK" },
+    orderBy: { tanggal: "desc" },
+    take: 2,
+  });
+
+  // 3. Data Berita Kartini
+  const countKartini = await prisma.berita.count({
+    where: { kategori: "KARTINI" },
+  });
+  const latestKartini = await prisma.berita.findMany({
+    where: { kategori: "KARTINI" },
+    orderBy: { tanggal: "desc" },
+    take: 2,
+  });
+
+  // --- TAMPILAN UI ---
   return (
     <div className="min-h-full font-sans p-4">
       {/* --- HEADER JUDUL DASHBOARD --- */}
@@ -42,7 +54,6 @@ export default function AdminDashboard() {
 
       {/* --- GRID UTAMA (3 KOLOM) --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        
         {/* ================= KOLOM 1: LAYANAN ================= */}
         <div
           className="relative rounded-[30px] border-[3px] p-5 pt-8 bg-white"
@@ -64,7 +75,7 @@ export default function AdminDashboard() {
               <h3 className="text-sm font-medium opacity-90">Jumlah Layanan</h3>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-[5rem] font-bold leading-none">
-                  {stats.countLayanan}
+                  {countLayanan}
                 </span>
                 <span className="text-sm font-medium opacity-90">
                   Layanan Aktif
@@ -95,7 +106,7 @@ export default function AdminDashboard() {
               Jumlah Berita Klinik
             </h3>
             <span className="text-[4rem] font-bold leading-none mt-1 relative z-10">
-              {stats.countKlinik}
+              {countKlinik}
             </span>
           </div>
 
@@ -106,16 +117,16 @@ export default function AdminDashboard() {
             >
               Berita Terbaru
             </div>
-            
-            {stats.latestKlinik.length > 0 ? (
-              stats.latestKlinik.map((berita: any) => (
+
+            {latestKlinik.length > 0 ? (
+              latestKlinik.map((berita: any) => (
                 <div
                   key={berita.id}
                   className="group relative w-full h-36 rounded-2xl border-[3px] overflow-hidden shadow-sm transition-transform hover:scale-[1.02]"
                   style={{ borderColor: bluePrimary }}
                 >
                   <img
-                    src={berita.gambar}
+                    src={berita.gambar || ""}
                     alt={berita.judul}
                     className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
                   />
@@ -156,7 +167,7 @@ export default function AdminDashboard() {
               Jumlah Berita Kartini
             </h3>
             <span className="text-[4rem] font-bold leading-none mt-1 relative z-10">
-              {stats.countKartini}
+              {countKartini}
             </span>
           </div>
 
@@ -168,15 +179,15 @@ export default function AdminDashboard() {
               Berita Terbaru
             </div>
 
-            {stats.latestKartini.length > 0 ? (
-              stats.latestKartini.map((berita: any) => (
+            {latestKartini.length > 0 ? (
+              latestKartini.map((berita: any) => (
                 <div
                   key={berita.id}
                   className="group relative w-full h-36 rounded-2xl border-[3px] overflow-hidden shadow-sm transition-transform hover:scale-[1.02]"
                   style={{ borderColor: bluePrimary }}
                 >
                   <img
-                    src={berita.gambar}
+                    src={berita.gambar || ""}
                     alt={berita.judul}
                     className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
                   />
@@ -195,7 +206,6 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
