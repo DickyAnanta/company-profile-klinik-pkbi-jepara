@@ -1,6 +1,6 @@
 import { Activity, Newspaper, Users, Stethoscope, Heart, Settings, Briefcase } from "lucide-react";
 import { PrismaClient } from "@prisma/client";
-import { getStatistics, updateStatistics } from "../actions"; // Import fungsi Server Actions
+import { getStatistics, updateStatistics } from "./actions"; // Import fungsi Server Actions
 
 // --- INISIALISASI PRISMA ---
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
