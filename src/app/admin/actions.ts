@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import fs from "fs/promises";
 import path from "path";
 
-// --- FUNGSI DASHBOARD (Sudah ada sebelumnya) ---
+// --- FUNGSI DASHBOARD ---
 export async function getDashboardStats() {
   try {
     const countKlinik = await prisma.berita.count({ where: { kategori: "KLINIK" } });
@@ -30,16 +30,14 @@ export async function getDashboardStats() {
   }
 }
 
-// --- FUNGSI LAYANAN (TAMBAHKAN INI) ---
+// --- FUNGSI LAYANAN ---
 
-// 1. Ambil Data Layanan
 export async function getLayanan() {
   return await prisma.layanan.findMany({
     orderBy: { id: "desc" },
   });
 }
 
-// 2. Tambah Layanan (Fungsi yang hilang tadi)
 export async function createLayanan(formData: FormData) {
   try {
     const file = formData.get("gambar") as File;
@@ -52,7 +50,7 @@ export async function createLayanan(formData: FormData) {
 
     await prisma.layanan.create({
       data: {
-        nama: formData.get("nama") as string,
+        namaLayanan: formData.get("nama") as string,
         harga: formData.get("harga") as string,
         jadwal: formData.get("jadwal") as string,
         keterangan: formData.get("keterangan") as string,
@@ -61,14 +59,13 @@ export async function createLayanan(formData: FormData) {
     });
     
     revalidatePath("/admin/layanan");
-    revalidatePath("/admin"); // Agar dashboard ikut update
+    revalidatePath("/admin");
     return { success: true };
   } catch (error: any) {
     return { error: error.message };
   }
 }
 
-// 3. Hapus Layanan
 export async function deleteLayanan(id: string) {
   try {
     const item = await prisma.layanan.findUnique({ where: { id } });
@@ -84,7 +81,6 @@ export async function deleteLayanan(id: string) {
   }
 }
 
-// 4. Update Layanan
 export async function updateLayanan(id: string, formData: FormData) {
   try {
     const existing = await prisma.layanan.findUnique({ where: { id } });
@@ -106,7 +102,7 @@ export async function updateLayanan(id: string, formData: FormData) {
     await prisma.layanan.update({
       where: { id },
       data: {
-        nama: formData.get("nama") as string,
+        namaLayanan: formData.get("nama") as string,
         harga: formData.get("harga") as string,
         jadwal: formData.get("jadwal") as string,
         keterangan: formData.get("keterangan") as string,
@@ -118,5 +114,46 @@ export async function updateLayanan(id: string, formData: FormData) {
     return { success: true };
   } catch (error: any) {
     return { error: error.message };
+  }
+}
+
+// --- FUNGSI STATISTIK (REVISI BARU) ---
+
+// 1. Ambil data statistik untuk Dashboard dan Landing Page
+export async function getStatistics() {
+  try {
+    let stats = await prisma.statistic.findFirst({ where: { id: 1 } });
+    if (!stats) {
+      // Inisialisasi data jika tabel masih kosong
+      stats = await prisma.statistic.create({
+        data: { id: 1, pasien: 1000, dokter: 4, relawan: 50 }
+      });
+    }
+    return stats;
+  } catch (error) {
+    console.error("Error getStatistics:", error);
+    return { pasien: 0, dokter: 0, relawan: 0 };
+  }
+}
+
+// 2. Update data statistik dari Form Admin
+export async function updateStatistics(formData: FormData) {
+  try {
+    const pasien = parseInt(formData.get("pasien") as string);
+    const dokter = parseInt(formData.get("dokter") as string);
+    const relawan = parseInt(formData.get("relawan") as string);
+
+    await prisma.statistic.update({
+      where: { id: 1 },
+      data: { pasien, dokter, relawan }
+    });
+
+    // Refresh cache halaman agar angka langsung berubah
+    revalidatePath("/admin"); 
+    revalidatePath("/"); // Update Landing Page publik
+    
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
   }
 }

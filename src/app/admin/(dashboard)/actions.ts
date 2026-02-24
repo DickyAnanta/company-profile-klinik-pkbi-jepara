@@ -1,53 +1,50 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
-const prisma = globalForPrisma.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+const prisma = new PrismaClient();
 
-export async function getDashboardStats() {
+export async function updateStatistics(formData: FormData) {
   try {
-    // 1. MENGAMBIL JUMLAH LAYANAN AKTIF DARI DATABASE
-    const countLayanan = await prisma.layanan.count();
+    // 1. Ambil semua data sekaligus untuk pengecekan
+    const p = formData.get("pasien");
+    const d = formData.get("dokter");
+    const r = formData.get("relawan");
+    const m = formData.get("mitra");
 
-    // 2. MENGAMBIL DATA BERITA KLINIK (Jumlah & 2 Berita Terbaru)
-    const countKlinik = await prisma.berita.count({
-      where: { kategori: "KLINIK" },
-    });
-    const latestKlinik = await prisma.berita.findMany({
-      where: { kategori: "KLINIK" },
-      orderBy: { tanggal: "desc" }, // Urutkan dari yang paling baru
-      take: 2, // Cukup ambil 2 saja untuk dashboard
+    // 2. LIHAT DI TERMINAL VS CODE: Apakah angka yang kamu ketik muncul di sini?
+    console.log("--- DEBUG DATA FORM ---");
+    console.log("Pasien:", p);
+    console.log("Dokter:", d);
+    console.log("Relawan:", r);
+    console.log("Mitra:", m);
+    console.log("-----------------------");
+
+    // 3. Konversi ke angka dan kirim ke database
+    await prisma.statistic.update({
+      where: { id: 1 },
+      data: {
+        pasien: Number(p) || 0,
+        dokter: Number(d) || 0,
+        relawan: Number(r) || 0,
+        mitra: Number(m) || 0, // Pastikan kolom 'mitra' sudah ada di MySQL
+      },
     });
 
-    // 3. MENGAMBIL DATA BERITA KARTINI (Jumlah & 2 Berita Terbaru)
-    const countKartini = await prisma.berita.count({
-      where: { kategori: "KARTINI" },
-    });
-    const latestKartini = await prisma.berita.findMany({
-      where: { kategori: "KARTINI" },
-      orderBy: { tanggal: "desc" },
-      take: 2,
-    });
-
-    // Mengembalikan semua data sekaligus ke frontend (page.tsx)
-    return {
-      countLayanan,
-      countKlinik,
-      latestKlinik,
-      countKartini,
-      latestKartini,
-    };
-  } catch (error) {
-    console.error("Gagal mengambil data dashboard:", error);
-    // Jika terjadi error, kembalikan nilai default agar halaman tidak crash
-    return {
-      countLayanan: 0,
-      countKlinik: 0,
-      latestKlinik: [],
-      countKartini: 0,
-      latestKartini: [],
-    };
+    // 4. Paksa Next.js untuk membuang data lama (Cache)
+    revalidatePath("/admin");
+    revalidatePath("/");
+    
+    return { success: true };
+  } catch (error: any) {
+    console.error("GAGAL UPDATE DB:", error.message);
+    return { success: false, error: error.message };
   }
+}
+
+// Fungsi ambil data tetap seperti sebelumnya
+export async function getStatistics() {
+  const stats = await prisma.statistic.findFirst({ where: { id: 1 } });
+  return stats || { pasien: 0, dokter: 0, relawan: 0, mitra: 0 };
 }

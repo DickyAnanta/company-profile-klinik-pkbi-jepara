@@ -32,14 +32,24 @@ model Admin {
 }
 
 model Layanan {
-  id          String   @id @default(cuid())
-  namaLayanan String
-  harga       String
-  jadwal      String
-  keterangan  String   @db.Text
-  gambar      String?  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  namaLayanan  String
+  harga        String
+  jadwal       String
+  keterangan   String   @db.Text
+  gambar       String?  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("layanan")
+}
+
+// --- MODEL BARU: STATISTIK REALTIME ---
+model Statistic {
+  id      Int @id @default(1)
+  pasien  Int @default(1000)
+  dokter  Int @default(5)
+  relawan Int @default(50)
+  mitra   Int @default(50)
+  @@map("statistic")
 }
