@@ -8,10 +8,14 @@ import path from "path";
 // --- FUNGSI DASHBOARD ---
 export async function getDashboardStats() {
   try {
-    const countKlinik = await prisma.berita.count({ where: { kategori: "KLINIK" } });
-    const countKartini = await prisma.berita.count({ where: { kategori: "KARTINI" } });
+    const countKlinik = await prisma.berita.count({
+      where: { kategori: "KLINIK" },
+    });
+    const countKartini = await prisma.berita.count({
+      where: { kategori: "KARTINI" },
+    });
     const countLayanan = await prisma.layanan.count();
-    
+
     const latestKlinik = await prisma.berita.findMany({
       where: { kategori: "KLINIK" },
       orderBy: { tanggal: "desc" },
@@ -24,7 +28,13 @@ export async function getDashboardStats() {
       take: 2,
     });
 
-    return { countKlinik, countKartini, countLayanan, latestKlinik, latestKartini };
+    return {
+      countKlinik,
+      countKartini,
+      countLayanan,
+      latestKlinik,
+      latestKartini,
+    };
   } catch (error) {
     return null;
   }
@@ -43,7 +53,7 @@ export async function createLayanan(formData: FormData) {
     const file = formData.get("gambar") as File;
     const buffer = Buffer.from(await file.arrayBuffer());
     const filename = Date.now() + "_" + file.name.replace(/\s+/g, "_");
-    
+
     const uploadDir = path.join(process.cwd(), "public/uploads");
     await fs.mkdir(uploadDir, { recursive: true });
     await fs.writeFile(path.join(uploadDir, filename), buffer);
@@ -57,7 +67,7 @@ export async function createLayanan(formData: FormData) {
         gambar: `/uploads/${filename}`,
       },
     });
-    
+
     revalidatePath("/admin/layanan");
     revalidatePath("/admin");
     return { success: true };
@@ -69,7 +79,8 @@ export async function createLayanan(formData: FormData) {
 export async function deleteLayanan(id: string) {
   try {
     const item = await prisma.layanan.findUnique({ where: { id } });
-    if (item?.gambar) {
+    // FIX: Pastikan item.gambar ada (tidak null) sebelum path.join
+    if (item && item.gambar) {
       const filePath = path.join(process.cwd(), "public", item.gambar);
       await fs.unlink(filePath).catch(() => null);
     }
@@ -90,12 +101,19 @@ export async function updateLayanan(id: string, formData: FormData) {
     const file = formData.get("gambar") as File;
 
     if (file && file.size > 0) {
-      const oldPath = path.join(process.cwd(), "public", existing.gambar);
-      await fs.unlink(oldPath).catch(() => null);
+      // FIX: Pastikan existing.gambar tidak null sebelum menghapus file lama
+      if (existing.gambar) {
+        const oldPath = path.join(process.cwd(), "public", existing.gambar);
+        await fs.unlink(oldPath).catch(() => null);
+      }
 
       const buffer = Buffer.from(await file.arrayBuffer());
       const filename = Date.now() + "_" + file.name.replace(/\s+/g, "_");
-      await fs.writeFile(path.join(process.cwd(), "public/uploads", filename), buffer);
+
+      const uploadDir = path.join(process.cwd(), "public/uploads");
+      await fs.mkdir(uploadDir, { recursive: true });
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+
       gambarPath = `/uploads/${filename}`;
     }
 
@@ -117,41 +135,39 @@ export async function updateLayanan(id: string, formData: FormData) {
   }
 }
 
-// --- FUNGSI STATISTIK (REVISI BARU) ---
+// --- FUNGSI STATISTIK (DIPERBAIKI) ---
 
-// 1. Ambil data statistik untuk Dashboard dan Landing Page
 export async function getStatistics() {
   try {
     let stats = await prisma.statistic.findFirst({ where: { id: 1 } });
     if (!stats) {
-      // Inisialisasi data jika tabel masih kosong
       stats = await prisma.statistic.create({
-        data: { id: 1, pasien: 1000, dokter: 4, relawan: 50 }
+        // FIX: Tambahkan field 'mitra' agar sesuai Dashboard Admin
+        data: { id: 1, pasien: 1000, dokter: 4, relawan: 50, mitra: 10 },
       });
     }
     return stats;
   } catch (error) {
     console.error("Error getStatistics:", error);
-    return { pasien: 0, dokter: 0, relawan: 0 };
+    return { pasien: 0, dokter: 0, relawan: 0, mitra: 0 };
   }
 }
 
-// 2. Update data statistik dari Form Admin
 export async function updateStatistics(formData: FormData) {
   try {
-    const pasien = parseInt(formData.get("pasien") as string);
-    const dokter = parseInt(formData.get("dokter") as string);
-    const relawan = parseInt(formData.get("relawan") as string);
+    const pasien = parseInt(formData.get("pasien") as string) || 0;
+    const dokter = parseInt(formData.get("dokter") as string) || 0;
+    const relawan = parseInt(formData.get("relawan") as string) || 0;
+    const mitra = parseInt(formData.get("mitra") as string) || 0;
 
     await prisma.statistic.update({
       where: { id: 1 },
-      data: { pasien, dokter, relawan }
+      data: { pasien, dokter, relawan, mitra },
     });
 
-    // Refresh cache halaman agar angka langsung berubah
-    revalidatePath("/admin"); 
-    revalidatePath("/"); // Update Landing Page publik
-    
+    revalidatePath("/admin");
+    revalidatePath("/");
+
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

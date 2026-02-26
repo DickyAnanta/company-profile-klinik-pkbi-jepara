@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   User as UserIcon,
   Stethoscope,
@@ -53,7 +53,7 @@ export default function Home() {
     cardGrad2: "#4c6ef5",
   };
 
-  // --- VARIAN ANIMASI ---
+  // --- VARIAN ANIMASI (FIXED WITH AS CONST) ---
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: {
@@ -61,7 +61,7 @@ export default function Home() {
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" },
     },
-  };
+  } as const;
 
   const staggerContainer = {
     hidden: { opacity: 0 },
@@ -69,7 +69,7 @@ export default function Home() {
       opacity: 1,
       transition: { staggerChildren: 0.2 },
     },
-  };
+  } as const;
 
   const cardFlipLeft = {
     hidden: { opacity: 0, rotateY: -90 },
@@ -78,7 +78,7 @@ export default function Home() {
       rotateY: 0,
       transition: { type: "spring", stiffness: 80, damping: 12, duration: 0.8 },
     },
-  };
+  } as const;
 
   const cardFlipRight = {
     hidden: { opacity: 0, rotateY: 90 },
@@ -87,7 +87,7 @@ export default function Home() {
       rotateY: 0,
       transition: { type: "spring", stiffness: 80, damping: 12, duration: 0.8 },
     },
-  };
+  } as const;
 
   return (
     <main className="min-h-screen bg-white font-sans overflow-x-hidden text-[#102a6e]">
@@ -184,9 +184,10 @@ export default function Home() {
                 },
               ].map((item, index) => {
                 const isLeftCard = index < 2;
-                const selectedVariant = isLeftCard
-                  ? cardFlipLeft
-                  : cardFlipRight;
+                // Casting ke Variants agar TypeScript tidak error saat kompilasi
+                const selectedVariant = (
+                  isLeftCard ? cardFlipLeft : cardFlipRight
+                ) as Variants;
                 const hoverTilt = isLeftCard ? -10 : 10;
 
                 return (
@@ -262,7 +263,6 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              // PERUBAHAN DI SINI: Menambahkan class w-full agar di HP mengambil lebar penuh dan justify-center berfungsi.
               className="w-full md:w-2/5 flex justify-center md:justify-end md:-mt-12 relative"
             >
               <div className="w-[300px] h-[450px] rounded-xl flex items-center justify-center relative">

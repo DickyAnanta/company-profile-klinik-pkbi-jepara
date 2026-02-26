@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
   Users,
   MapPin,
@@ -33,16 +33,16 @@ export default function YouthCenterPage() {
     cardGrad2: "#4c6ef5",
   };
 
-  // --- VARIAN ANIMASI HALUS ---
+  // --- VARIAN ANIMASI (FIXED WITH AS CONST) ---
   const fadeInDown = {
     hidden: { opacity: 0, y: -20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  };
+  } as const;
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  };
+  } as const;
 
   const staggerContainer = {
     hidden: { opacity: 0 },
@@ -50,7 +50,7 @@ export default function YouthCenterPage() {
       opacity: 1,
       transition: { staggerChildren: 0.2 },
     },
-  };
+  } as const;
 
   const modalVariants = {
     hidden: { opacity: 0, scale: 0.9, y: 20 },
@@ -58,10 +58,20 @@ export default function YouthCenterPage() {
       opacity: 1,
       scale: 1,
       y: 0,
-      transition: { type: "spring", damping: 25, stiffness: 300, delay: 0.1 },
+      transition: {
+        type: "spring" as const, // Menentukan tipe spring secara eksplisit
+        damping: 25,
+        stiffness: 300,
+        delay: 0.1,
+      },
     },
-    exit: { opacity: 0, scale: 0.95, y: -20, transition: { duration: 0.2 } },
-  };
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      y: -20,
+      transition: { duration: 0.2 },
+    },
+  } as const;
 
   return (
     <main className="min-h-screen bg-white font-sans overflow-x-hidden text-[#102a6e]">
@@ -74,6 +84,7 @@ export default function YouthCenterPage() {
               alt="bg youth center"
               fill
               className="object-cover object-top"
+              priority
             />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/70 to-white"></div>
@@ -82,7 +93,7 @@ export default function YouthCenterPage() {
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={fadeInDown}
+          variants={fadeInDown as Variants}
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center"
         >
           <div className="inline-flex items-center gap-2 bg-blue-100 px-4 py-1.5 rounded-full mb-6">
@@ -111,7 +122,6 @@ export default function YouthCenterPage() {
             Pusat Informasi & Pelayanan Kesehatan Reproduksi Remaja
           </p>
 
-          {/* TOMBOL 1: Di Bagian Atas (Hero) */}
           <button
             onClick={() => setIsPopupOpen(true)}
             className="py-3 px-10 rounded-full font-extrabold text-lg shadow-lg hover:scale-105 transition-transform uppercase border-b-[4px] border-white/50"
@@ -133,7 +143,7 @@ export default function YouthCenterPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              variants={fadeInUp}
+              variants={fadeInUp as Variants}
               className="md:w-3/5"
             >
               <h3
@@ -208,7 +218,7 @@ export default function YouthCenterPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            variants={fadeInUp}
+            variants={fadeInUp as Variants}
           >
             <h3
               className="text-3xl font-extrabold mb-6 uppercase tracking-tight"
@@ -264,12 +274,12 @@ export default function YouthCenterPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            variants={staggerContainer}
+            variants={staggerContainer as Variants}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
             {/* Card 1 */}
             <motion.div
-              variants={fadeInUp}
+              variants={fadeInUp as Variants}
               whileHover={{ y: -10 }}
               className="rounded-[2.5rem] p-10 text-white shadow-xl flex flex-col items-center text-center transition-all"
               style={{
@@ -288,7 +298,7 @@ export default function YouthCenterPage() {
 
             {/* Card 2 */}
             <motion.div
-              variants={fadeInUp}
+              variants={fadeInUp as Variants}
               whileHover={{ y: -10 }}
               className="rounded-[2.5rem] p-10 text-white shadow-xl flex flex-col items-center text-center transition-all"
               style={{
@@ -307,7 +317,7 @@ export default function YouthCenterPage() {
 
             {/* Card 3 */}
             <motion.div
-              variants={fadeInUp}
+              variants={fadeInUp as Variants}
               whileHover={{ y: -10 }}
               className="rounded-[2.5rem] p-10 text-white shadow-xl flex flex-col items-center text-center transition-all"
               style={{
@@ -339,7 +349,6 @@ export default function YouthCenterPage() {
             Ingin bergabung menjadi <br /> Relawan Remaja PKBI?
           </h3>
 
-          {/* TOMBOL 2: Di Bagian Bawah (CTA) */}
           <motion.button
             onClick={() => setIsPopupOpen(true)}
             whileHover={{ scale: 1.05 }}
@@ -355,9 +364,7 @@ export default function YouthCenterPage() {
         </motion.div>
       </section>
 
-      {/* ========================================= */}
-      {/* POPUP MODAL INSTAGRAM (Menggunakan Framer Motion) */}
-      {/* ========================================= */}
+      {/* --- POPUP MODAL --- */}
       <AnimatePresence>
         {isPopupOpen && (
           <motion.div
@@ -367,18 +374,17 @@ export default function YouthCenterPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-            onClick={() => setIsPopupOpen(false)} // Klik luar untuk tutup
+            onClick={() => setIsPopupOpen(false)}
           >
             <motion.div
               key="modal-box"
-              variants={modalVariants}
+              variants={modalVariants as Variants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              onClick={(e) => e.stopPropagation()} // Mencegah klik di dalam kotak menutup modal
+              onClick={(e) => e.stopPropagation()}
               className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden relative"
             >
-              {/* Header Popup (Gradasi Instagram) */}
               <div className="bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] p-6 text-white text-center relative">
                 <button
                   onClick={() => setIsPopupOpen(false)}
@@ -394,7 +400,6 @@ export default function YouthCenterPage() {
                 </p>
               </div>
 
-              {/* Body Popup */}
               <div className="p-8 flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-pink-50 text-[#e1306c] rounded-2xl flex items-center justify-center mb-5 shadow-sm ring-4 ring-pink-100/50">
                   <Instagram size={36} strokeWidth={2} />
@@ -406,7 +411,6 @@ export default function YouthCenterPage() {
                   kami.
                 </p>
 
-                {/* Tombol Link ke Instagram DM */}
                 <a
                   href={igLink}
                   target="_blank"

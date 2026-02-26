@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image"; // <-- Pastikan ini diimpor
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,15 +18,22 @@ const Navbar = () => {
       : "text-[#102a6e] hover:text-red-500 transition-colors";
   };
 
-  // --- Animasi Varian ---
+  // --- Animasi Varian (FIXED WITH AS CONST) ---
   const menuVariants = {
-    closed: { opacity: 0, y: -20, transition: { duration: 0.2 } },
+    closed: {
+      opacity: 0,
+      y: -20,
+      transition: { duration: 0.2 },
+    },
     opened: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.3, ease: "easeOut" },
+      transition: {
+        duration: 0.3,
+        ease: "easeOut" as const, // Mengunci tipe agar dikenali Framer Motion
+      },
     },
-  };
+  } as const;
 
   return (
     <motion.nav
@@ -37,10 +44,9 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          {/* --- LOGO AREA (Updated to use logo-horizontal.png) --- */}
+          {/* --- LOGO AREA --- */}
           <Link href="/">
             <motion.div
-              // Animasi hover skala halus untuk logo horizontal
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
               className="relative"
@@ -48,13 +54,10 @@ const Navbar = () => {
               <Image
                 src="/images/logo-horizontal.png"
                 alt="Logo PKBI Horizontal"
-                // Tentukan width dan height intrinsik gambar asli
-                // atau gunakan aspect ratio dan kontrol ukuran via className
-                width={160} // Placeholder ukuran asli, sesuaikan dengan file asli
-                height={48} // Placeholder ukuran asli, sesuaikan dengan file asli
-                // h-10 pada HP (40px), h-12 pada laptop (48px), w-auto menjaga aspect ratio
+                width={160}
+                height={48}
                 className="h-10 md:h-12 w-auto object-contain"
-                priority // Muat lebih awal karena di atas lipatan
+                priority
               />
             </motion.div>
           </Link>
@@ -71,7 +74,6 @@ const Navbar = () => {
                   {path === "/"
                     ? "Beranda"
                     : path.replace("/", "").replace("-", " ")}
-                  {/* Garis bawah tipis saat hover */}
                   <motion.span className="absolute left-0 -bottom-1 h-[2px] bg-red-500 w-0 group-hover:w-full transition-all duration-300" />
                 </Link>
               ),
@@ -88,14 +90,14 @@ const Navbar = () => {
           </motion.button>
         </div>
 
-        {/* --- MOBILE DROPDOWN (Animasi Slide & Fade) --- */}
+        {/* --- MOBILE DROPDOWN (Fixed Variants Type) --- */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
               initial="closed"
               animate="opened"
               exit="closed"
-              variants={menuVariants}
+              variants={menuVariants as Variants} // Type casting ke Variants
               className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg flex flex-col items-center py-8 gap-6 font-semibold text-sm uppercase border-t-2 border-slate-100"
             >
               <Link
