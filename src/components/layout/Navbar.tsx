@@ -52,8 +52,11 @@ const Navbar = () => {
             >
               Youth Center
             </Link>
-            <Link href="/kontak" className={getLinkClass("/kontak")}>
-              Kontak
+            <Link
+              href="/tentang-kami"
+              className={getLinkClass("/tentang-kami")}
+            >
+              Tentang Kami
             </Link>
           </div>
 
@@ -70,7 +73,7 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg flex flex-col items-center py-6 gap-4 font-semibold text-sm uppercase border-t-2 border-slate-100">
             <Link
-              href="/about"
+              href="/"
               onClick={() => setIsOpen(false)}
               className={getLinkClass("/")}
             >
@@ -98,11 +101,11 @@ const Navbar = () => {
               Youth Center
             </Link>
             <Link
-              href="/kontak"
+              href="/tentang-kami"
               onClick={() => setIsOpen(false)}
-              className={getLinkClass("/kontak")}
+              className={getLinkClass("/tentang-kami")}
             >
-              Kontak
+              Tentang Kami
             </Link>
           </div>
         )}

@@ -126,7 +126,7 @@ export default function SideBar() {
                     : "border-transparent text-gray-300 hover:text-white"
                 }`}
               >
-                KARTINI
+                YOUTH CENTER
               </Link>
             </div>
           </div>
