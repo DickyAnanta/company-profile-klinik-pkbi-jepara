@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import BeritaSlider from "./BeritaSlider"; //
+export const dynamic = "force-dynamic";
 
 // --- INISIALISASI PRISMA ---
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
