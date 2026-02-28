@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import {
   Activity,
   Newspaper,
@@ -10,7 +11,6 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { getStatistics, updateStatistics } from "./actions"; // Import fungsi Server Actions
 
-export const dynamic = "force-dynamic";
 // --- INISIALISASI PRISMA ---
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const prisma = globalForPrisma.prisma || new PrismaClient();

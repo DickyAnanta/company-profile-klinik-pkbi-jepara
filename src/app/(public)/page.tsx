@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import Image from "next/image";
 // Hapus import Link jika tidak digunakan di halaman ini
