@@ -1,25 +1,19 @@
-name: Deploy Next.js to Hostinger
+name: Deploy PKBI to Hostinger
 
 on:
   push:
     branches:
-      - main # Ganti jika nama branch kamu bukan main
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
         with:
           version: 8
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "pnpm"
@@ -27,9 +21,12 @@ jobs:
       - name: Install & Build
         run: |
           pnpm install
+          # Skip pengecekan database saat build
           pnpm run build
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Gunakan URL dummy agar Prisma tidak error saat build
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/db"
+          NEXT_TELEMETRY_DISABLED: 1
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
