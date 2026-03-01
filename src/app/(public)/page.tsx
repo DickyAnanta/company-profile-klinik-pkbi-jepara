@@ -1,6 +1,7 @@
 "use client";
 
 export const dynamic = "force-dynamic"; // Ini boleh tetap ada di bawah "use client"
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, Variants } from "framer-motion";
 import {
