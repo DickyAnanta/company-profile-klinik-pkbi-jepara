@@ -1,9 +1,6 @@
 "use client";
-export const dynamic = "force-dynamic";
 
-import Image from "next/image";
-// Hapus import Link jika tidak digunakan di halaman ini
-// import Link from "next/link";
+export const dynamic = "force-dynamic"; // Ini boleh tetap ada di bawah "use client"
 import { useState, useEffect } from "react";
 import { motion, Variants } from "framer-motion";
 import {
