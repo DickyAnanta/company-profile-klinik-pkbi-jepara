@@ -1,4 +1,4 @@
-"use client";
+"use server";
 export const dynamic = "force-dynamic";
 
 import { motion } from "framer-motion";
